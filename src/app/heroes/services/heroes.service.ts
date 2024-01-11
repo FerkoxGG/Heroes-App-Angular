@@ -23,6 +23,6 @@ export class HeroesService {
   }
 
   getSuggestions(query: string): Observable<Hero[]> {
-    return this.httpClient.get<Hero[]>(`/heroes?q=${query}&_limit=6`);
+    return this.httpClient.get<Hero[]>(`${this.baseUrl}/heroes?q=${query}&_limit=6`);
   }
 }
