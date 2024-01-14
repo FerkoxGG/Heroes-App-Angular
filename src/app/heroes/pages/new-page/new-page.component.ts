@@ -6,6 +6,7 @@ import { HeroesService } from "../../services/heroes.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { switchMap } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
+import { ConfirmDialogComponent } from "../../components/confirm-dialog/confirm-dialog.component";
 
 @Component({
   selector: "app-new-page",
@@ -75,16 +76,30 @@ export class NewPageComponent implements OnInit {
   }
 
   onDelete(): void {
-    if (
-      !confirm(
-        `Estás seguro/a de eliminar al héroe "${this.currentHero.superhero}"?`
-      )
-    )
-      return;
-    this.heroesService.deleteHeroById(this.currentHero).subscribe(() => {
-      this.showSnackBar(`El héroe ha sido eliminado`);
-      this.router.navigate(["/heroes"]);
+    if (!this.currentHero.id) throw Error("Hero id is required");
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: this.heroForm.value
     });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+
+      this.heroesService.deleteHeroById(this.currentHero).subscribe(() => {
+        this.showSnackBar(`El héroe ha sido eliminado`);
+        this.router.navigate(["/heroes"]);
+      });
+    });
+
+    // if (
+    //   !confirm(
+    //     `Estás seguro/a de eliminar al héroe "${this.currentHero.superhero}"?`
+    //   )
+    // )
+    //   return;
+    // this.heroesService.deleteHeroById(this.currentHero).subscribe(() => {
+    //   this.showSnackBar(`El héroe ha sido eliminado`);
+    //   this.router.navigate(["/heroes"]);
+    // });
   }
 
   showSnackBar(message: string): void {
